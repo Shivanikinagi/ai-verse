@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoiceAuth Pro - Advanced Voice Authentication</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --dark: #1d3557;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1d2b64, #f8cdda);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .status-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid #eee;
+        }
+
+        .status-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .status-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .icon-microphone {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+        }
+
+        .icon-shield {
+            background: rgba(76, 201, 240, 0.1);
+            color: var(--success);
+        }
+
+        .icon-lock {
+            background: rgba(247, 37, 133, 0.1);
+            color: var(--danger);
+        }
+
+        .status-content h3 {
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+            color: var(--dark);
+        }
+
+        .status-content p {
+            color: var(--gray);
+            line-height: 1.6;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .record-btn {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 20px;
+            font-size: 1.2rem;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .record-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(67, 97, 238, 0.4);
+        }
+
+        .record-btn:active {
+            transform: translateY(0);
+        }
+
+        .record-btn.recording {
+            background: linear-gradient(to right, var(--danger), #b5179e);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(247, 37, 133, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(247, 37, 133, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(247, 37, 133, 0); }
+        }
+
+        .visualizer {
+            height: 100px;
+            background: rgba(67, 97, 238, 0.05);
+            border-radius: 15px;
+            margin: 25px 0;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 3px;
+            padding: 15px;
+        }
+
+        .bar {
+            width: 8px;
+            background: linear-gradient(to top, var(--primary), var(--success));
+            border-radius: 4px 4px 0 0;
+            transition: height 0.1s ease;
+        }
+
+        .response-area {
+            background: rgba(29, 53, 87, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .response-text {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .response-subtext {
+            color: var(--gray);
+            font-size: 1rem;
+        }
+
+        .success {
+            color: #2a9d8f;
+        }
+
+        .error {
+            color: var(--danger);
+        }
+
+        .warning {
+            color: var(--warning);
+        }
+
+        .info {
+            color: var(--primary);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid #eee;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .feature-card h4 {
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        .feature-card p {
+            color: var(--gray);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--gray);
+            font-size: 0.9rem;
+            border-top: 1px solid #eee;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .status-content h3 {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-microphone-alt"></i> VoiceAuth Pro</h1>
+            <p>Advanced Voice Authentication with ML-Powered Spoof Detection</p>
+        </div>
+        
+        <div class="content">
+            <div class="status-card">
+                <div class="status-header">
+                    <div class="status-icon icon-microphone">
+                        <i class="fas fa-microphone"></i>
+                    </div>
+                    <div class="status-content">
+                        <h3>Real-time Voice Authentication</h3>
+                        <p>Speaker verification using SpeechBrain's ECAPA model for accurate identification</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="status-card">
+                <div class="status-header">
+                    <div class="status-icon icon-shield">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="status-content">
+                        <h3>ML-Based Spoof Detection</h3>
+                        <p>Advanced machine learning algorithms detect replay and synthetic voice attacks</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="status-card">
+                <div class="status-header">
+                    <div class="status-icon icon-lock">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <div class="status-content">
+                        <h3>Secure Embedding Storage</h3>
+                        <p>Only mathematical representations stored - never raw audio for maximum privacy</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="visualizer" id="visualizer">
+                <!-- Audio visualization bars will be generated by JavaScript -->
+            </div>
+            
+            <div class="controls">
+                <button class="record-btn" id="recordBtn">
+                    <i class="fas fa-microphone"></i>
+                    <span id="btnText">Start Recording</span>
+                </button>
+            </div>
+            
+            <div class="response-area">
+                <div class="response-text" id="responseText">Ready to authenticate</div>
+                <div class="response-subtext" id="responseSubtext">Click the button above to begin</div>
+            </div>
+            
+            <div class="features">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h4>Lightning Fast</h4>
+                    <p>Real-time authentication with sub-200ms response times</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <h4>Anti-Spoofing</h4>
+                    <p>Detects replay attacks, TTS, and voice conversion attempts</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-fingerprint"></i>
+                    </div>
+                    <h4>Biometric Security</h4>
+                    <p>Unique voice characteristics provide strong authentication</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>VoiceAuth Pro &copy; 2025 | Secure Voice Authentication System</p>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const recordBtn = document.getElementById('recordBtn');
+        const btnText = document.getElementById('btnText');
+        const responseText = document.getElementById('responseText');
+        const responseSubtext = document.getElementById('responseSubtext');
+        const visualizer = document.getElementById('visualizer');
+        
+        // Audio variables
+        let mediaRecorder;
+        let audioContext;
+        let analyser;
+        let microphone;
+        let isRecording = false;
+        let websocket;
+        let animationFrame;
+        
+        // Create visualization bars
+        function createVisualizer() {
+            visualizer.innerHTML = '';
+            for (let i = 0; i < 64; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                bar.style.height = '5px';
+                visualizer.appendChild(bar);
+            }
+        }
+        
+        // Update visualization
+        function updateVisualizer() {
+            if (!analyser) return;
+            
+            const bars = document.querySelectorAll('.bar');
+            const dataArray = new Uint8Array(analyser.frequencyBinCount);
+            analyser.getByteFrequencyData(dataArray);
+            
+            bars.forEach((bar, index) => {
+                const value = dataArray[index] || 0;
+                const height = Math.max(5, value / 2);
+                bar.style.height = `${height}px`;
+            });
+            
+            if (isRecording) {
+                animationFrame = requestAnimationFrame(updateVisualizer);
+            }
+        }
+        
+        // Initialize audio
+        async function initAudio() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                microphone = audioContext.createMediaStreamSource(stream);
+                
+                analyser.fftSize = 128;
+                microphone.connect(analyser);
+                
+                mediaRecorder = new MediaRecorder(stream);
+                
+                mediaRecorder.ondataavailable = event => {
+                    if (event.data.size > 0 && websocket && websocket.readyState === WebSocket.OPEN) {
+                        // Convert blob to array buffer and send as binary
+                        event.data.arrayBuffer().then(buffer => {
+                            // We need to convert this to the format our server expects
+                            // For now, we'll just send it as is
+                            websocket.send(buffer);
+                        });
+                    }
+                };
+                
+                mediaRecorder.onstop = () => {
+                    if (websocket && websocket.readyState === WebSocket.OPEN) {
+                        // Send stop signal
+                        websocket.send(JSON.stringify({type: 'stop'}));
+                    }
+                };
+                
+                updateVisualizer();
+            } catch (err) {
+                console.error('Error accessing microphone:', err);
+                responseText.textContent = 'Microphone Access Error';
+                responseText.className = 'response-text error';
+                responseSubtext.textContent = 'Please allow microphone access and refresh the page';
+            }
+        }
+        
+        // Connect to WebSocket server
+        function connectWebSocket() {
+            // Try to connect to the WebSocket server
+            websocket = new WebSocket('ws://localhost:8000/ws');
+            
+            websocket.onopen = function(event) {
+                console.log('Connected to WebSocket server');
+                responseText.textContent = 'Connected to server';
+                responseText.className = 'response-text info';
+                responseSubtext.textContent = 'Ready for voice authentication';
+            };
+            
+            websocket.onmessage = function(event) {
+                const message = event.data;
+                console.log('Received message:', message);
+                
+                // Parse the response and update UI
+                if (message.includes('REGISTERED')) {
+                    responseText.textContent = 'Registration Complete!';
+                    responseText.className = 'response-text success';
+                    responseSubtext.textContent = 'Your voice has been registered. Speak again to authenticate.';
+                } else if (message.includes('ACCESS_GRANTED')) {
+                    responseText.textContent = 'Access Granted!';
+                    responseText.className = 'response-text success';
+                    responseSubtext.textContent = message;
+                } else if (message.includes('ACCESS_DENIED')) {
+                    responseText.textContent = 'Access Denied';
+                    responseText.className = 'response-text error';
+                    responseSubtext.textContent = message;
+                } else if (message.includes('SPOOF_DETECTED')) {
+                    responseText.textContent = 'Spoof Detected!';
+                    responseText.className = 'response-text warning';
+                    responseSubtext.textContent = message;
+                } else {
+                    responseText.textContent = 'Processing...';
+                    responseText.className = 'response-text info';
+                    responseSubtext.textContent = message;
+                }
+            };
+            
+            websocket.onclose = function(event) {
+                console.log('WebSocket connection closed');
+                responseText.textContent = 'Connection Lost';
+                responseText.className = 'response-text error';
+                responseSubtext.textContent = 'Please ensure the server is running and refresh the page';
+            };
+            
+            websocket.onerror = function(error) {
+                console.error('WebSocket error:', error);
+                responseText.textContent = 'Connection Error';
+                responseText.className = 'response-text error';
+                responseSubtext.textContent = 'Could not connect to server. Is it running?';
+            };
+        }
+        
+        // Start recording
+        function startRecording() {
+            if (!mediaRecorder) {
+                responseText.textContent = 'Audio not initialized';
+                responseText.className = 'response-text error';
+                return;
+            }
+            
+            // Reset UI
+            responseText.textContent = 'Listening...';
+            responseText.className = 'response-text info';
+            responseSubtext.textContent = 'Speak now...';
+            
+            // Update button
+            recordBtn.classList.add('recording');
+            btnText.textContent = 'Stop Recording';
+            
+            // Start recording
+            mediaRecorder.start();
+            isRecording = true;
+            
+            // Send start signal if connected
+            if (websocket && websocket.readyState === WebSocket.OPEN) {
+                // For our server, we don't need an explicit start signal
+                // The first audio data will trigger registration or authentication
+            }
+        }
+        
+        // Stop recording
+        function stopRecording() {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                isRecording = false;
+                
+                // Update button
+                recordBtn.classList.remove('recording');
+                btnText.textContent = 'Start Recording';
+                
+                // Update UI
+                responseText.textContent = 'Processing...';
+                responseText.className = 'response-text info';
+                responseSubtext.textContent = 'Analyzing your voice';
+            }
+        }
+        
+        // Toggle recording
+        function toggleRecording() {
+            if (isRecording) {
+                stopRecording();
+            } else {
+                startRecording();
+            }
+        }
+        
+        // Initialize the application
+        function init() {
+            createVisualizer();
+            initAudio();
+            connectWebSocket();
+            
+            // Event listeners
+            recordBtn.addEventListener('click', toggleRecording);
+        }
+        
+        // Start the application when the page loads
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
